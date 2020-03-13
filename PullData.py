@@ -79,12 +79,15 @@ def parse_data_to_cells():
 # TODO: make a separete class to handle .xlsx
 try:
     workbook = load_xlsx_file()
+    date_style = 'new_datetime'
+
 except FileNotFoundError:
     workbook = Workbook()
+    date_style = NamedStyle(name='new_datetime', number_format='DD/MM/YYYY')
 
 worksheet = workbook.active
 create_xlsx_headers(worksheet)
-date_style = NamedStyle(name='new_datetime', number_format='DD/MM/YYYY')
+
 
 # Main code for pulling data from AASP
 data = pandas.read_json(request_url())
