@@ -47,7 +47,7 @@ def create_xlsx_headers(ws):
 
 
 def request_url():
-    url = 'https://cadastroapi.aasp.org.br/api/Associado/intimacao?chave='+cfg.api_key+'&data=11-03-2020&diferencial=false'
+    url = 'https://cadastroapi.aasp.org.br/api/Associado/intimacao?chave=' + cfg.api_key + '&data=11-03-2020&diferencial=false'
     response = requests.get(url)
     response.raise_for_status()
     return response.text
@@ -60,13 +60,21 @@ def add_formulae_to_deadline_column():
         cell.style = date_style
 
 
+def cell_exists():
+    return False
+
+
 def add_cells_to_worksheet(date, title, text, row_count):
+    if cell_exists():
+        return 
     date_cell = worksheet.cell(row=row_count, column=1, value=date)
     date_cell.style = date_style
     title_cell = worksheet.cell(row=row_count, column=2, value=title)
     text_cell = worksheet.cell(row=row_count, column=3, value=text[0:500])
     text_cell.alignment = Alignment(horizontal='general', vertical='top', text_rotation=0, wrap_text=True,
                                     shrink_to_fit=False, indent=0)
+
+
 def parse_data_to_cells():
     number_of_entries = len(worksheet['A'])
     for idx, d in enumerate(data['intimacoes']):
@@ -74,9 +82,10 @@ def parse_data_to_cells():
         date = format_date(d['jornal']['dataDisponibilizacao_Publicacao'])
         title = format_title(d['titulo'])
         text = format_title(d['textoPublicacao'])
-        add_cells_to_worksheet(date, title, text,row_count)
+        add_cells_to_worksheet(date, title, text, row_count)
 
-# TODO: make a separete class to handle .xlsx
+
+# TODO: make a separate class to handle .xlsx
 try:
     workbook = load_xlsx_file()
     date_style = 'new_datetime'
@@ -88,13 +97,8 @@ except FileNotFoundError:
 worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
-
 # Main code for pulling data from AASP
 data = pandas.read_json(request_url())
-
-
-
-
 
 parse_data_to_cells()
 
