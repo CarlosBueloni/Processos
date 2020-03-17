@@ -48,8 +48,8 @@ def create_xlsx_headers(ws):
         ws[constant.ID_COLUMN + '1'] = 'id'
 
 
-def request_url():
-    url = 'https://cadastroapi.aasp.org.br/api/Associado/intimacao?chave=' + cfg.api_key + '&data=11-03-2020&diferencial=false'
+def request_url(api_key, date, diferencial):
+    url = 'https://cadastroapi.aasp.org.br/api/Associado/intimacao?chave=' + api_key + '&data='+date+'&diferencial='+ diferencial
     response = requests.get(url)
     response.raise_for_status()
     return response.text
@@ -62,12 +62,16 @@ def add_formulae_to_deadline_column():
         cell.style = get_date_style()
 
 
-def row_exists():
+def row_exists(row_id):
+    for i in range(2, len(worksheet[constant.ID_COLUMN])+1):
+        if worksheet[constant.ID_COLUMN + str(i)].value == row_id:
+            print('Duplicate found id: '+ str(row_id))
+            return True
     return False
 
 
-def add_cells_to_worksheet(date, title, text, id, row_count):
-    if row_exists():
+def add_cells_to_worksheet(date, title, text, row_id, row_count):
+    if row_exists(row_id):
         return
     date_cell = worksheet.cell(row=row_count, column=constant.DATE_COLUMN_NUMBER, value=date)
     date_cell.style = get_date_style()
@@ -75,7 +79,7 @@ def add_cells_to_worksheet(date, title, text, id, row_count):
     text_cell = worksheet.cell(row=row_count, column=constant.TEXT_COLUMN_NUMBER, value=text[0:500])
     text_cell.alignment = Alignment(horizontal='general', vertical='top', text_rotation=0, wrap_text=True,
                                     shrink_to_fit=False, indent=0)
-    id_cell = worksheet.cell(row=row_count, column=constant.ID_COLUMN_NUMBER, value=id)
+    id_cell = worksheet.cell(row=row_count, column=constant.ID_COLUMN_NUMBER, value=row_id)
 
 
 def parse_data_to_cells():
@@ -85,8 +89,8 @@ def parse_data_to_cells():
         date = format_date(d['jornal']['dataDisponibilizacao_Publicacao'])
         title = format_title(d['titulo'])
         text = format_title(d['textoPublicacao'])
-        id = d['codigoRelacionamento']
-        add_cells_to_worksheet(date, title, text, id, row_count)
+        row_id = d['codigoRelacionamento']
+        add_cells_to_worksheet(date, title, text, row_id, row_count)
 
 
 def get_workbook():
@@ -109,7 +113,7 @@ def get_date_style():
 
 
 def hide_id_column():
-    worksheet.column_dimensions['F'].hidden = True
+    worksheet.column_dimensions[constant.ID_COLUMN].hidden = True
 
 
 workbook = get_workbook()
@@ -117,11 +121,8 @@ worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
 # Main code for pulling data from AASP
-data = pandas.read_json(request_url())
-
+data = pandas.read_json(request_url(cfg.api_key, '11-03-2020', 'false'))
 parse_data_to_cells()
-
 add_formulae_to_deadline_column()
-
 hide_id_column()
 save_xlsx_file(workbook)
