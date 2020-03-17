@@ -144,3 +144,4 @@ static
 *.xlsx
 .idea/
 config.py
+.~lock.output.xlsx#
