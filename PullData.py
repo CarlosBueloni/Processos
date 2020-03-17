@@ -39,7 +39,7 @@ def create_xlsx_headers(ws):
         ws.column_dimensions[constant.DATE_COLUMN].width = 25
         ws[constant.TITLE_COLUMN + '1'] = 'Titulo'
         ws.column_dimensions[constant.TITLE_COLUMN].width = 40
-        ws[constant.TITLE_COLUMN + '1'] = 'Publicação'
+        ws[constant.TEXT_COLUMN + '1'] = 'Publicação'
         ws.column_dimensions[constant.TEXT_COLUMN].width = 40
         ws[constant.DEADLINE_COLUMN + '1'] = 'Prazo'
         ws.column_dimensions[constant.DEADLINE_COLUMN].width = 25
@@ -121,7 +121,7 @@ worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
 # Main code for pulling data from AASP
-data = pandas.read_json(request_url(cfg.api_key, '11-03-2020', 'false'))
+data = pandas.read_json(request_url(cfg.api_key, '09-03-2020', 'false'))
 parse_data_to_cells()
 add_formulae_to_deadline_column()
 hide_id_column()
