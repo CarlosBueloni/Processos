@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment, Protection
 from openpyxl.styles import NamedStyle, Font, Border, Side
 import config as cfg
+import constant
 
 
 def format_date(p_date):
@@ -34,16 +35,17 @@ def create_xlsx_headers(ws):
 
     if count == 0:
         print('populate headers')
-        ws['A1'] = 'Data de publicação'
-        ws.column_dimensions['A'].width = 25
-        ws['B1'] = 'Titulo'
-        ws.column_dimensions['B'].width = 40
-        ws['C1'] = 'Publicação'
-        ws.column_dimensions['C'].width = 40
-        ws['D1'] = 'Prazo'
-        ws.column_dimensions['D'].width = 25
-        ws['E1'] = 'Data de Prazo'
-        ws.column_dimensions['E'].width = 25
+        ws[constant.DATE_COLUMN + '1'] = 'Data de publicação'
+        ws.column_dimensions[constant.DATE_COLUMN].width = 25
+        ws[constant.TITLE_COLUMN + '1'] = 'Titulo'
+        ws.column_dimensions[constant.TITLE_COLUMN].width = 40
+        ws[constant.TITLE_COLUMN + '1'] = 'Publicação'
+        ws.column_dimensions[constant.TEXT_COLUMN].width = 40
+        ws[constant.DEADLINE_COLUMN + '1'] = 'Prazo'
+        ws.column_dimensions[constant.DEADLINE_COLUMN].width = 25
+        ws[constant.FORMULAE_COLUMN + '1'] = 'Data de Prazo'
+        ws.column_dimensions[constant.FORMULAE_COLUMN].width = 25
+        ws[constant.ID_COLUMN + '1'] = 'id'
 
 
 def request_url():
@@ -54,25 +56,26 @@ def request_url():
 
 
 def add_formulae_to_deadline_column():
-    for row_number in range(2, len(worksheet['E'])):
-        new_value = '=A' + str(row_number) + '+D' + str(row_number)
-        cell = worksheet.cell(row=row_number, column=5, value=new_value)
-        cell.style = date_style
+    for row_number in range(2, len(worksheet[constant.FORMULAE_COLUMN]) + 1):
+        new_value = '=' + constant.DATE_COLUMN + str(row_number) + '+' + constant.DEADLINE_COLUMN + str(row_number)
+        cell = worksheet.cell(row=row_number, column=constant.FORMULAE_COLUMN_NUMBER, value=new_value)
+        cell.style = get_date_style()
 
 
-def cell_exists():
+def row_exists():
     return False
 
 
-def add_cells_to_worksheet(date, title, text, row_count):
-    if cell_exists():
-        return 
-    date_cell = worksheet.cell(row=row_count, column=1, value=date)
-    date_cell.style = date_style
-    title_cell = worksheet.cell(row=row_count, column=2, value=title)
-    text_cell = worksheet.cell(row=row_count, column=3, value=text[0:500])
+def add_cells_to_worksheet(date, title, text, id, row_count):
+    if row_exists():
+        return
+    date_cell = worksheet.cell(row=row_count, column=constant.DATE_COLUMN_NUMBER, value=date)
+    date_cell.style = get_date_style()
+    title_cell = worksheet.cell(row=row_count, column=constant.TITLE_COLUMN_NUMBER, value=title)
+    text_cell = worksheet.cell(row=row_count, column=constant.TEXT_COLUMN_NUMBER, value=text[0:500])
     text_cell.alignment = Alignment(horizontal='general', vertical='top', text_rotation=0, wrap_text=True,
                                     shrink_to_fit=False, indent=0)
+    id_cell = worksheet.cell(row=row_count, column=constant.ID_COLUMN_NUMBER, value=id)
 
 
 def parse_data_to_cells():
@@ -82,18 +85,34 @@ def parse_data_to_cells():
         date = format_date(d['jornal']['dataDisponibilizacao_Publicacao'])
         title = format_title(d['titulo'])
         text = format_title(d['textoPublicacao'])
-        add_cells_to_worksheet(date, title, text, row_count)
+        id = d['codigoRelacionamento']
+        add_cells_to_worksheet(date, title, text, id, row_count)
 
 
-# TODO: make a separate class to handle .xlsx
-try:
-    workbook = load_xlsx_file()
-    date_style = 'new_datetime'
+def get_workbook():
+    try:
+        _workbook = load_xlsx_file()
 
-except FileNotFoundError:
-    workbook = Workbook()
-    date_style = NamedStyle(name='new_datetime', number_format='DD/MM/YYYY')
+    except FileNotFoundError:
+        _workbook = Workbook()
 
+    return _workbook
+
+
+def get_date_style():
+    style = NamedStyle(name='new_datetime', number_format='DD/MM/YYYY')
+    try:
+        workbook.add_named_style(style)
+    except ValueError:
+        style = 'new_datetime'
+    return style
+
+
+def hide_id_column():
+    worksheet.column_dimensions['F'].hidden = True
+
+
+workbook = get_workbook()
 worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
@@ -104,4 +123,5 @@ parse_data_to_cells()
 
 add_formulae_to_deadline_column()
 
+hide_id_column()
 save_xlsx_file(workbook)
