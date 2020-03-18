@@ -3,6 +3,7 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment, Protection
 from openpyxl.styles import NamedStyle, Font, Border, Side
+from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule
 import config as cfg
 import constant
 
@@ -11,6 +12,18 @@ def format_date(p_date):
     data = datetime.datetime.strptime(p_date, '%Y-%m-%dT%H:%M:%S')
     new_date = data.date().strftime("%d/%m/%Y")
     return new_date
+
+def format_cell_style():
+    red_fill = PatternFill(start_color='EE1111',end_color = 'EE1111',fill_type = 'solid')
+    orange_fill = PatternFill(start_color='f77d26',end_color='f77d26',fill_type='solid')
+    yellow_fill = PatternFill(start_color='f7cd26',end_color='f7cd26',fill_type='solid')
+    green_fill = PatternFill(start_color='92f726',end_color='92f726',fill_type='solid')
+
+    for i in range(2,len(worksheet[constant.DEADLINE_COLUMN]) + 1):
+        worksheet.conditional_formatting.add(constant.FORMULAE_COLUMN + str(i),FormulaRule(formula = [constant.OK_COLUMN + str(i) + '="ok"'],fill = green_fill))
+        worksheet.conditional_formatting.add(constant.FORMULAE_COLUMN + str(i),CellIsRule(operator='<', formula=['TODAY()'], stopIfTrue=True, fill=red_fill))
+        worksheet.conditional_formatting.add(constant.FORMULAE_COLUMN + str(i), CellIsRule(operator='=', formula=['TODAY()'], stopIfTrue=True,fill=orange_fill))
+        worksheet.conditional_formatting.add(constant.FORMULAE_COLUMN + str(i), CellIsRule(operator='<=', formula=['TODAY() + 3'], stopIfTrue=True,fill=yellow_fill))
 
 
 def format_title(title):
@@ -121,8 +134,9 @@ worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
 # Main code for pulling data from AASP
-data = pandas.read_json(request_url(cfg.api_key, '09-03-2020', 'false'))
+data = pandas.read_json(request_url(cfg.api_key, '18-03-2020', 'false'))
 parse_data_to_cells()
 add_formulae_to_deadline_column()
 hide_id_column()
+format_cell_style()
 save_xlsx_file(workbook)
