@@ -134,7 +134,7 @@ worksheet = workbook.active
 create_xlsx_headers(worksheet)
 
 # Main code for pulling data from AASP
-data = pandas.read_json(request_url(cfg.api_key, '18-03-2020', 'false'))
+data = pandas.read_json(request_url(cfg.api_key, '17-03-2020', 'false'))
 parse_data_to_cells()
 add_formulae_to_deadline_column()
 hide_id_column()
