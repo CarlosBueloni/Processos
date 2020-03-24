@@ -97,7 +97,7 @@ def add_cells_to_worksheet(date, title, text, row_id, row_count):
 
 def parse_data_to_cells():
     number_of_entries = len(worksheet['A'])
-    for idx, d in enumerate(data['intimacoes']):
+    for idx, d in enumerate(chosen_data['intimacoes']):
         row_count = idx + number_of_entries + 1
         date = format_date(d['jornal']['dataDisponibilizacao_Publicacao'])
         title = format_title(d['titulo'])
@@ -129,14 +129,18 @@ def hide_id_column():
     worksheet.column_dimensions[constant.ID_COLUMN].hidden = True
 
 
-workbook = get_workbook()
-worksheet = workbook.active
-create_xlsx_headers(worksheet)
+def main(date):
+    global workbook
+    global worksheet
+    global chosen_data
+    workbook = get_workbook()
+    worksheet = workbook.active
+    create_xlsx_headers(worksheet)
 
-# Main code for pulling data from AASP
-data = pandas.read_json(request_url(cfg.api_key, '17-03-2020', 'false'))
-parse_data_to_cells()
-add_formulae_to_deadline_column()
-hide_id_column()
-format_cell_style()
-save_xlsx_file(workbook)
+    # Main code for pulling data from AASP
+    chosen_data = pandas.read_json(request_url(cfg.api_key, date, 'false'))
+    parse_data_to_cells()
+    add_formulae_to_deadline_column()
+    hide_id_column()
+    format_cell_style()
+    save_xlsx_file(workbook)

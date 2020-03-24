@@ -1,4 +1,5 @@
 import sys
+import PullData
 from datetime import datetime
 import calendar
 from PyQt5.QtWidgets import QApplication, QWidget, QCalendarWidget, QPushButton, QMessageBox
@@ -30,7 +31,7 @@ class CalendarDemo(QWidget):
         self.calendar.setMaximumDate(
             QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
 
-        self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
+        qDate = self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
 
         self.calendar.clicked.connect(self.printDateInfo)
         self.button.clicked.connect(self.on_button_clicked)
@@ -40,7 +41,8 @@ class CalendarDemo(QWidget):
         print(f'Day Number of the year: {qDate.dayOfYear()}')
         print(f'Day Number of the week: {qDate.dayOfWeek()}')
 
-    def on_button_clicked(self,qDate):
+    def on_button_clicked(self):
+        PullData.main('10-03-2020')
         alert = QMessageBox()
         alert.setText('Baixando processos')
         alert.exec_()
