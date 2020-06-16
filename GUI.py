@@ -14,13 +14,14 @@ class CalendarDemo(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Calendar Demo')
-        self.setGeometry(300, 300, 450, 300)
+        self.setWindowTitle('Calendario')
+        self.setGeometry(300, 300, 680, 460)
         self.initUI()
 
     def initUI(self):
         self.calendar = QCalendarWidget(self)
-        self.calendar.move(20, 20)
+        self.calendar.setGeometry(20,20,630,410)
+        #self.calendar.move(20, 20
         self.calendar.setGridVisible(True)
         self.button = QPushButton('Confirmar')
         self.calendar.layout().addWidget(self.button)
