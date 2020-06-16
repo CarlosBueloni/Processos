@@ -145,3 +145,4 @@ static
 .idea/
 config.py
 .~lock.output.xlsx#
+.vscode/

@@ -7,10 +7,10 @@ from PyQt5.QtCore import QDate
 
 
 class CalendarDemo(QWidget):
-    global currentYear, currentMonth
-
+    global currentYear, currentMonth, final_date
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
+    final_date = '{0}-{1}-{2}'.format(datetime.now().day,datetime.now().month,datetime.now().year)
 
     def __init__(self):
         super().__init__()
@@ -25,11 +25,8 @@ class CalendarDemo(QWidget):
         self.button = QPushButton('Confirmar')
         self.calendar.layout().addWidget(self.button)
 
-
-
         self.calendar.setMinimumDate(QDate(currentYear-10, currentMonth, 1))
-        self.calendar.setMaximumDate(
-            QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
+        self.calendar.setMaximumDate(QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
 
         qDate = self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
 
@@ -37,12 +34,14 @@ class CalendarDemo(QWidget):
         self.button.clicked.connect(self.on_button_clicked)
 
     def printDateInfo(self, qDate):
-        print('{0}/{1}/{2}'.format(qDate.month(), qDate.day(), qDate.year()))
+        self.final_date = '{0}-{1}-{2}'.format(qDate.day(), qDate.month(), qDate.year())
+        print(self.final_date)
         print(f'Day Number of the year: {qDate.dayOfYear()}')
         print(f'Day Number of the week: {qDate.dayOfWeek()}')
 
     def on_button_clicked(self):
-        PullData.main('10-03-2020')
+        print(self.final_date)
+        PullData.main(self.final_date)
         alert = QMessageBox()
         alert.setText('Baixando processos')
         alert.exec_()
