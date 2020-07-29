@@ -21,7 +21,6 @@ class CalendarDemo(QWidget):
     def initUI(self):
         self.calendar = QCalendarWidget(self)
         self.calendar.setGeometry(20,20,630,410)
-        #self.calendar.move(20, 20
         self.calendar.setGridVisible(True)
         self.button = QPushButton('Confirmar')
         self.calendar.layout().addWidget(self.button)
@@ -29,7 +28,7 @@ class CalendarDemo(QWidget):
         self.calendar.setMinimumDate(QDate(currentYear-10, currentMonth, 1))
         self.calendar.setMaximumDate(QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
 
-        qDate = self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
+        self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
 
         self.calendar.clicked.connect(self.printDateInfo)
         self.button.clicked.connect(self.on_button_clicked)
