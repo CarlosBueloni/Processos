@@ -1,4 +1,4 @@
-import json, requests, sys, pandas, datetime, openpyxl
+import json, requests, sys, pandas, datetime, openpyxl, urllib, ssl
 from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment, Protection
@@ -63,9 +63,11 @@ def create_xlsx_headers(ws):
 
 def request_url(api_key, date, diferencial):
     url = 'https://cadastroapi.aasp.org.br/api/Associado/intimacao?chave=' + api_key + '&data='+date+'&diferencial='+ diferencial
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.text
+    #response = requests.get(url, verify=False)
+    #esponse.raise_for_status()
+    context = ssl._create_unverified_context()
+    response = urllib.request.urlopen(url, context=context)
+    return response
 
 
 def add_formulae_to_deadline_column():

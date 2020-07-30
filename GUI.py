@@ -35,12 +35,12 @@ class CalendarDemo(QWidget):
 
     def printDateInfo(self, qDate):
         self.final_date = '{0}-{1}-{2}'.format(qDate.day(), qDate.month(), qDate.year())
-        print(self.final_date)
-        print(f'Day Number of the year: {qDate.dayOfYear()}')
-        print(f'Day Number of the week: {qDate.dayOfWeek()}')
+        # print(self.final_date)
+        # print(f'Day Number of the year: {qDate.dayOfYear()}')
+        # print(f'Day Number of the week: {qDate.dayOfWeek()}')
 
     def on_button_clicked(self):
-        print(self.final_date)
+        # print(self.final_date)
         PullData.main(self.final_date)
         alert = QMessageBox()
         alert.setText('Baixando processos')
