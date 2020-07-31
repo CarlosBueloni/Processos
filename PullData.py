@@ -32,11 +32,11 @@ def format_title(title):
 
 
 def save_xlsx_file(wb):
-    wb.save('output.xlsx')
+    wb.save(file_name)
 
 
 def load_xlsx_file():
-    return load_workbook('output.xlsx')
+    return load_workbook(file_name)
 
 
 def create_xlsx_headers(ws):
@@ -132,9 +132,11 @@ def hide_id_column():
 
 
 def main(date):
+    global file_name 
     global workbook
     global worksheet
     global chosen_data
+    file_name = 'processos.xlsx'
     workbook = get_workbook()
     worksheet = workbook.active
     create_xlsx_headers(worksheet)
