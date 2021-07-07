@@ -1,0 +1,1 @@
+Para o funcionamento do projeto deve ser criado um arquivo chamado config.py com uma variavel chamada api_key contendo a chave de acesso pessoal do site da AASP.
